@@ -59,8 +59,8 @@
   },
   "phrases": {
     "exact": {
-      "OpenClaw Command Center": "OpenClaw 指挥中心",
-      "Command Center": "指挥中心",
+      "Mission Control Deck": "OpenClaw 指挥中心",
+      "Mission Deck": "指挥中心",
       "Connecting...": "连接中...",
       "Total Tokens": "总 Token",
       "Input": "输入",

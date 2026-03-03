@@ -27,6 +27,7 @@ if [ -f "$PID_FILE" ]; then
 fi
 
 # Also kill any orphaned processes
+pkill -f "node.*core/server.js" 2>/dev/null
 pkill -f "node.*lib/server.js" 2>/dev/null
 pkill -f "cloudflared.*localhost:3333" 2>/dev/null
 

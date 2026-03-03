@@ -1,5 +1,5 @@
 /**
- * OpenClaw Command Center - Main Application
+ * Mission Control Deck - Main Application
  *
  * Uses morphdom for efficient DOM updates (only patches what changed).
  */
@@ -294,7 +294,7 @@ async function fetchState() {
 // ============================================================================
 
 function init() {
-  console.log("[App] Initializing OpenClaw Command Center");
+  console.log("[App] Initializing Mission Control Deck");
   connectSSE();
 
   // Initial fetch to populate immediately

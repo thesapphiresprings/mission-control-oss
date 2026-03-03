@@ -9,11 +9,11 @@ metadata:
     install:
       - id: start
         kind: shell
-        command: "node lib/server.js"
-        label: "Start Command Center (http://localhost:3333)"
+        command: "node core/server.js"
+        label: "Start Mission Control Deck (http://localhost:3333)"
 ---
 
-# OpenClaw Command Center
+# Mission Control Deck
 
 Mission control for your AI workforce.
 
@@ -22,7 +22,7 @@ Mission control for your AI workforce.
 ```bash
 npx clawhub@latest install command-center
 cd skills/command-center
-node lib/server.js
+node core/server.js
 ```
 
 Dashboard runs at **http://localhost:3333**
@@ -51,7 +51,7 @@ The dashboard auto-detects your OpenClaw workspace. Set `OPENCLAW_WORKSPACE` to 
 | `cloudflare` | Public deployment |
 
 ```bash
-DASHBOARD_AUTH_MODE=tailscale node lib/server.js
+DASHBOARD_AUTH_MODE=tailscale node core/server.js
 ```
 
 ## API
@@ -64,6 +64,5 @@ DASHBOARD_AUTH_MODE=tailscale node lib/server.js
 
 ## Links
 
-- [GitHub](https://github.com/jontsai/openclaw-command-center)
-- [ClawHub](https://www.clawhub.ai/jontsai/command-center)
-- [Documentation](https://github.com/jontsai/openclaw-command-center#readme)
+- [GitHub](https://github.com/thesapphiresprings/mission-control-oss)
+- [Documentation](https://github.com/thesapphiresprings/mission-control-oss#readme)

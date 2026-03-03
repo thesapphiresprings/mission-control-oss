@@ -3,7 +3,7 @@
 # Check: No User Data
 # Ensures user-specific data files are not staged for commit
 #
-# Rule: public/data/AGENTS.md - never commit operators.json or privacy-settings.json
+# Rule: apps/command-deck/data/AGENTS.md - never commit operators.json or privacy-settings.json
 #
 
 REPO_ROOT="${1:-.}"
@@ -12,6 +12,9 @@ REPO_ROOT="${1:-.}"
 STAGED_FILES=$(git diff --cached --name-only 2>/dev/null || echo "")
 
 USER_DATA_FILES=(
+    "apps/command-deck/data/operators.json"
+    "apps/command-deck/data/privacy-settings.json"
+    # Legacy paths from pre-refactor layout
     "public/data/operators.json"
     "public/data/privacy-settings.json"
 )

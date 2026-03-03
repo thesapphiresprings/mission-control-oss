@@ -1,5 +1,5 @@
 /**
- * API and SSE connection management for Command Center
+ * API and SSE connection management for Mission Deck
  */
 
 // SSE connection state

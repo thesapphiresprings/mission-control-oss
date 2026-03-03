@@ -37,7 +37,7 @@ echo ""
 
 # Start the Node.js server
 cd "$SCRIPT_DIR/.."
-PORT=$PORT node lib/server.js &
+PORT=$PORT node core/server.js &
 SERVER_PID=$!
 echo $SERVER_PID > "$PID_FILE"
 

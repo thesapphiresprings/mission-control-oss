@@ -1,4 +1,4 @@
-# public/data/ — User-Specific Data
+# apps/command-deck/data/ — User-Specific Data
 
 **DO NOT COMMIT** the following files — they contain user-specific data:
 

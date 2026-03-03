@@ -6,7 +6,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DASHBOARD_DIR="$(dirname "$SCRIPT_DIR")"
-LOG_DIR="${HOME}/.openclaw-command-center/logs"
+LOG_DIR="${HOME}/.mission-control-deck/logs"
 LOG_FILE="${LOG_DIR}/dashboard.log"
 
 mkdir -p "$LOG_DIR"
@@ -32,7 +32,7 @@ while true; do
     echo "[$(date)] Starting dashboard..." | tee -a "$LOG_FILE"
     
     # Run the server
-    if node lib/server.js 2>&1 | tee -a "$LOG_FILE"; then
+    if node core/server.js 2>&1 | tee -a "$LOG_FILE"; then
         # Clean exit
         echo "[$(date)] Dashboard exited cleanly" | tee -a "$LOG_FILE"
         DELAY=$INITIAL_DELAY

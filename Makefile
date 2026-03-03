@@ -4,7 +4,7 @@
 # Runs dashboard in tmux for easy inspection and management
 
 TMUX_SESSION := openclaw-dashboard
-LOG_DIR := $(HOME)/.openclaw-command-center/logs
+LOG_DIR := $(HOME)/.mission-control-deck/logs
 LOG_FILE := $(LOG_DIR)/dashboard.log
 DASHBOARD_DIR := $(CURDIR)
 PORT := 3333
@@ -50,7 +50,7 @@ ensure: ## Ensure dashboard is running (idempotent, self-healing)
 	elif [ "$$(tmux display-message -t $(TMUX_SESSION):0.0 -p '#{pane_dead}')" = "1" ]; then \
 		echo "⚠️  Dashboard pane died. Respawning..."; \
 		tmux respawn-pane -k -t $(TMUX_SESSION):0.0 -c $(DASHBOARD_DIR) \
-			"node lib/server.js 2>&1 | tee -a $(LOG_FILE); echo '[Dashboard exited - shell ready]'; exec bash -l"; \
+			"node core/server.js 2>&1 | tee -a $(LOG_FILE); echo '[Dashboard exited - shell ready]'; exec bash -l"; \
 		echo "✅ Dashboard respawned."; \
 	elif [ "$$(tmux display-message -t $(TMUX_SESSION):0.2 -p '#{pane_dead}')" = "1" ]; then \
 		echo "⚠️  Logs pane died. Respawning..."; \

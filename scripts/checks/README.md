@@ -7,7 +7,7 @@ Automated enforcement of rules from `AGENTS.md` and `CONTRIBUTING.md`.
 | Check             | Rule Source           | Description                                          |
 | ----------------- | --------------------- | ---------------------------------------------------- |
 | `version-sync.sh` | CONTRIBUTING.md       | Ensures `package.json` and `SKILL.md` versions match |
-| `no-user-data.sh` | public/data/AGENTS.md | Blocks commits of user-specific data files           |
+| `no-user-data.sh` | apps/command-deck/data/AGENTS.md | Blocks commits of user-specific data files           |
 | `no-secrets.sh`   | AGENTS.md             | Scans for accidentally committed secrets             |
 
 ## Adding New Checks

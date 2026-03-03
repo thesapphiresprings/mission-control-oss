@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Pre-commit hook for openclaw-command-center
+# Pre-commit hook for mission-control-oss
 # Validates rules from AGENTS.md and CONTRIBUTING.md before allowing commits
 #
 # Install: cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit

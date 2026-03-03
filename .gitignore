@@ -14,11 +14,11 @@ pids/
 *.pid
 *.seed
 *.pid.lock
-mission-control/server.pid
-mission-control/server.log
-mission-control/status.txt
-mission-control/logs-stdout.txt
-mission-control/logs-stderr.txt
+apps/mission-room/server.pid
+apps/mission-room/server.log
+apps/mission-room/status.txt
+apps/mission-room/logs-stdout.txt
+apps/mission-room/logs-stderr.txt
 
 # Coverage & Testing
 coverage/
@@ -50,6 +50,16 @@ config/local.json
 !config/*.example.json
 
 # User-specific data (keep examples)
+apps/command-deck/data/operators.json
+apps/command-deck/data/privacy-settings.json
+!apps/command-deck/data/*.example
+
+# Legacy paths from pre-refactor layout
+mission-control/server.pid
+mission-control/server.log
+mission-control/status.txt
+mission-control/logs-stdout.txt
+mission-control/logs-stderr.txt
 public/data/operators.json
 public/data/privacy-settings.json
 !public/data/*.example

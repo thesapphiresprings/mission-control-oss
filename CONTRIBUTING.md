@@ -1,8 +1,8 @@
-# Contributing to OpenClaw Command Center
+# Contributing to Mission Control Deck
 
 > _"Join the Swarm. Evolve together."_
 
-First off, thank you for considering contributing to OpenClaw Command Center! This project thrives on community involvement.
+First off, thank you for considering contributing to Mission Control Deck! This project thrives on community involvement.
 
 ## 📋 Table of Contents
 
@@ -36,14 +36,14 @@ This project adheres to our [Code of Conduct](./CODE_OF_CONDUCT.md). By particip
 2. **Clone your fork**
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/openclaw-command-center.git
-   cd openclaw-command-center
+   git clone https://github.com/YOUR_USERNAME/mission-control-oss.git
+   cd mission-control-oss
    ```
 
 3. **Add upstream remote**
 
    ```bash
-   git remote add upstream https://github.com/jontsai/openclaw-command-center.git
+   git remote add upstream https://github.com/thesapphiresprings/mission-control-oss.git
    ```
 
 4. **Install dependencies**

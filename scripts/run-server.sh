@@ -8,4 +8,4 @@ if [ -f "$HOME/.nvm/nvm.sh" ]; then
 fi
 
 cd "$(dirname "$0")/.."
-exec node lib/server.js
+exec node core/server.js

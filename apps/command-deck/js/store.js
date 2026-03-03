@@ -1,5 +1,5 @@
 /**
- * Simple state store for Command Center
+ * Simple state store for Mission Deck
  * Holds the current dashboard state and notifies subscribers of changes
  */
 

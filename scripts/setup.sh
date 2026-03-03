@@ -41,7 +41,7 @@ else
 fi
 
 # Create log directory
-LOG_DIR="$HOME/.openclaw-command-center/logs"
+LOG_DIR="$HOME/.mission-control-deck/logs"
 mkdir -p "$LOG_DIR"
 echo "   Log directory: $LOG_DIR"
 

@@ -1,10 +1,10 @@
 {
   "app": {
-    "title": "OpenClaw Command Center",
+    "title": "Mission Control Deck",
     "connecting": "Connecting..."
   },
   "sidebar": {
-    "title": "Command Center",
+    "title": "Mission Deck",
     "navigation": "Navigation",
     "settings": "Settings",
     "quickStats": "Quick Stats",
@@ -58,7 +58,7 @@
     "polling": "Polling mode (SSE disconnected)"
   },
   "jobs": {
-    "pageTitle": "AI Jobs - OpenClaw Command Center",
+    "pageTitle": "AI Jobs - Mission Control Deck",
     "dashboard": "🤖 AI Jobs Dashboard",
     "refresh": "🔄 Refresh",
     "totalJobs": "Total Jobs",

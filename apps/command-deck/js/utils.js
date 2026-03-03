@@ -1,5 +1,5 @@
 /**
- * Utility functions for Command Center
+ * Utility functions for Mission Deck
  */
 
 export function formatTimeAgo(mins) {

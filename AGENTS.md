@@ -19,7 +19,7 @@ This is a public open source project. Even maintainers (including AI agents work
 
 ## 🎯 Mission
 
-OpenClaw Command Center is the central dashboard for AI assistant management. Your mission is to help build, maintain, and improve this system while maintaining the Starcraft/Zerg thematic elements that make it unique.
+Mission Control Deck is the central dashboard for AI assistant management. Your mission is to help build, maintain, and improve this system while maintaining the Starcraft/Zerg thematic elements that make it unique.
 
 ## 🏛️ Architecture
 
@@ -34,29 +34,21 @@ Key architectural principles:
 
 ## 📁 Workspace Structure
 
-```
-openclaw-command-center/
-├── lib/                    # Core server logic
+```text
+mission-control-oss/
+├── core/                   # Runtime control plane
 │   ├── server.js           # Main HTTP server and API routes
 │   ├── config.js           # Configuration loader with auto-detection
 │   ├── jobs.js             # Jobs/scheduler API integration
 │   ├── linear-sync.js      # Linear issue tracker integration
 │   └── topic-classifier.js # NLP-based topic classification
-├── public/                 # Frontend assets
-│   ├── index.html          # Main dashboard UI
-│   ├── jobs.html           # AI Jobs management UI
-│   ├── partials/           # ⭐ Shared HTML partials (DRY!)
-│   │   └── sidebar.html    # Navigation sidebar component
-│   ├── css/
-│   │   └── dashboard.css   # Shared styles
-│   └── js/
-│       ├── sidebar.js      # Sidebar loader + SSE badges
-│       ├── app.js          # Main dashboard logic
-│       └── lib/            # Third-party libraries
+├── apps/
+│   ├── command-deck/       # Main dashboard UI assets
+│   └── mission-room/       # Mission-style alternate UI surface
+├── lib/                    # Backward-compatibility wrappers
 ├── scripts/                # Operational scripts
 ├── config/                 # Configuration (be careful!)
 ├── docs/                   # Documentation
-│   └── architecture/       # Architecture Decision Records
 ├── tests/                  # Test files
 ├── SKILL.md                # ClawHub skill metadata
 └── package.json            # Version and dependencies
@@ -67,7 +59,7 @@ openclaw-command-center/
 Do freely:
 
 - Read any file to understand the codebase
-- Create/modify files in `lib/`, `public/`, `docs/`, `tests/`
+- Create/modify files in `core/`, `apps/`, `lib/`, `docs/`, `tests/`
 - Add tests
 - Update documentation
 - Create feature branches
@@ -86,7 +78,7 @@ Check with a human before:
 
 - **Push directly to `main` branch** — ALL changes require PRs
 - Commit secrets, API keys, or credentials
-- Commit user-specific data files (see `public/data/AGENTS.md`)
+- Commit user-specific data files (see `apps/command-deck/data/AGENTS.md`)
 - Delete files without confirmation
 - Expose internal endpoints publicly
 
@@ -209,9 +201,9 @@ The installed version is tracked in `.clawhub/origin.json` within the skill dire
 
 ### Who Can Publish?
 
-Only maintainers with ClawHub credentials for `jontsai/command-center` can publish. Currently:
+Only maintainers with ClawHub credentials for this repository can publish. Currently:
 
-- @jontsai (owner)
+- repository maintainer(s)
 
 Contributors: Submit PRs. After merge, a maintainer will handle the ClawHub publish.
 
