@@ -9,20 +9,18 @@
 - 支持 Profile 感知的运行模式
 - 默认不包含私有数据与敏感密钥
 
-## 目录结构（全新）
+## 目录结构
 
-```text
-mission-control-oss/
-├── core/                      # 后端控制平面（Node）
-├── apps/
-│   ├── command-deck/          # 主看板前端（由 core/server.js 提供）
-│   └── mission-room/          # 任务室风格的独立 UI
-├── lib/                       # 兼容层（旧路径包装）
-├── config/                    # 配置样例与本地配置
-├── scripts/                   # 启停、检查、发布脚本
-├── docs/                      # 截图与架构文档
-└── tests/                     # 测试
-```
+完整的 tracked 仓库结构请看 [docs/REPOSITORY-STRUCTURE.md](docs/REPOSITORY-STRUCTURE.md)。
+
+简版：
+- `core/`：后端控制平面和 API
+- `apps/command-deck/`：主看板前端
+- `apps/mission-room/`：独立的 mission 风格 UI
+- `lib/`：旧路径兼容包装
+- `docs/`：架构文档、截图和仓库说明
+- `scripts/`：启停、检查、发布脚本
+- `tests/`：测试
 
 ## 快速开始
 

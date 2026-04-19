@@ -3,6 +3,7 @@
 ## Available Docs
 
 - [Architecture Overview](./architecture/OVERVIEW.md)
+- [Repository Structure](./REPOSITORY-STRUCTURE.md)
 - [Contributing Guide](../CONTRIBUTING.md)
 
 ## Screenshot Gallery

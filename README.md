@@ -17,35 +17,19 @@ The project is intentionally organized as a multi-surface workspace:
 - `apps/mission-room/` is a separate mission-style UI surface
 - `lib/` remains as compatibility shims for older commands and imports
 
-## Folder Structure
+## Repository Structure
 
-```text
-mission-control-oss/
-├── core/                      # Runtime control plane (Node backend)
-│   ├── server.js              # Main HTTP server + API
-│   ├── config.js              # Config and workspace detection
-│   ├── jobs.js                # Jobs API bridge
-│   ├── linear-sync.js         # Optional Linear sync
-│   └── topic-classifier.js    # Topic intelligence
-├── apps/
-│   ├── command-deck/          # Primary dashboard (served by core/server.js)
-│   │   ├── index.html
-│   │   ├── jobs.html
-│   │   ├── css/
-│   │   ├── js/
-│   │   ├── locales/
-│   │   ├── partials/
-│   │   └── data/
-│   └── mission-room/          # Mission-control style standalone surface
-│       ├── index.html
-│       ├── app.js
-│       └── style.css
-├── lib/                       # Backward-compatibility wrappers
-├── config/                    # Example/local config files
-├── scripts/                   # Start/stop/check/release helpers
-├── docs/                      # Screenshots + architecture notes
-└── tests/                     # Node test suite
-```
+See [docs/REPOSITORY-STRUCTURE.md](docs/REPOSITORY-STRUCTURE.md) for the full tracked tree
+and file-by-file breakdown.
+
+The short version:
+- `core/` runs the backend and API
+- `apps/command-deck/` is the main dashboard UI
+- `apps/mission-room/` is the alternate mission-style UI
+- `lib/` keeps legacy entrypoints working
+- `docs/` holds architecture notes, screenshots, and repo docs
+- `scripts/` holds startup, verification, and release helpers
+- `tests/` covers the backend and topic logic
 
 ## Quick Start
 

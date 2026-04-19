@@ -56,6 +56,8 @@ mission-control-oss/
 └── docs/
 ```
 
+For the complete tracked file tree, see [../REPOSITORY-STRUCTURE.md](../REPOSITORY-STRUCTURE.md).
+
 ## Compatibility Contract
 
 - `node lib/server.js` continues to work.
