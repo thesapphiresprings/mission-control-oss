@@ -1232,14 +1232,17 @@ async function runOpenClawAsync(args) {
 // SESSION CACHE - Async refresh to avoid blocking
 // ============================================================================
 let sessionsCache = { sessions: [], timestamp: 0, refreshing: false };
-const SESSIONS_CACHE_TTL = 10000; // 10 seconds
+const SESSIONS_CACHE_TTL = parseInt(
+  process.env.MISSION_CONTROL_SESSIONS_CACHE_TTL_MS || "60000",
+  10,
+); // 60 seconds
 
 async function refreshSessionsCache() {
   if (sessionsCache.refreshing) return; // Don't double-refresh
   sessionsCache.refreshing = true;
 
   try {
-    const output = await runOpenClawAsync("sessions list --json 2>/dev/null");
+    const output = await runOpenClawAsync("sessions --all-agents --json 2>/dev/null");
     const jsonStr = extractJSON(output);
     if (jsonStr) {
       const data = JSON.parse(jsonStr);
@@ -1570,17 +1573,20 @@ function getSessions(options = {}) {
   const limit = Object.prototype.hasOwnProperty.call(options, "limit") ? options.limit : 20;
   const returnCount = options.returnCount || false;
 
-  // For "get all" requests (limit: null), use the async cache
-  // This is the expensive operation that was blocking
-  if (limit === null) {
-    const cached = getSessionsCached();
+  // Use the async cache for both paged and full-session requests.
+  // Falling back to a synchronous OpenClaw invocation on every list request
+  // creates a steady stream of helper processes and drives CPU unnecessarily.
+  const cached = getSessionsCached();
+  const hasWarmCache = sessionsCache.timestamp > 0;
+  if (hasWarmCache) {
     const totalCount = cached.length;
-    return returnCount ? { sessions: cached, totalCount } : cached;
+    const sessions = limit == null ? cached : cached.slice(0, limit);
+    return returnCount ? { sessions, totalCount } : sessions;
   }
 
-  // For limited requests, can still use sync (fast enough)
+  // Cold-start fallback only: use a direct sync call until the async cache warms.
   try {
-    const output = runOpenClaw("sessions list --json 2>/dev/null");
+    const output = runOpenClaw("sessions --all-agents --json 2>/dev/null");
     const jsonStr = extractJSON(output);
     if (jsonStr) {
       const data = JSON.parse(jsonStr);
@@ -1942,9 +1948,9 @@ function getCapacity() {
     // Fall back to defaults
   }
 
-  // Try to get active counts from sessions list (preferred - has full session keys)
+  // Try to get active counts from sessions CLI (preferred - has full session keys)
   try {
-    const output = runOpenClaw("sessions list --json 2>/dev/null");
+    const output = runOpenClaw("sessions --all-agents --json 2>/dev/null");
     const jsonStr = extractJSON(output);
     if (jsonStr) {
       const data = JSON.parse(jsonStr);
@@ -1972,7 +1978,7 @@ function getCapacity() {
     }
   } catch (e) {
     console.error(
-      "Failed to get capacity from sessions list, falling back to filesystem:",
+      "Failed to get capacity from sessions CLI, falling back to filesystem:",
       e.message,
     );
   }
@@ -2164,7 +2170,18 @@ function getData() {
 
 let cachedState = null;
 let lastStateUpdate = 0;
-const STATE_CACHE_TTL = 30000; // 30 seconds - reduce blocking from CLI calls
+const STATE_CACHE_TTL = parseInt(
+  process.env.MISSION_CONTROL_STATE_CACHE_TTL_MS || "60000",
+  10,
+); // 60 seconds
+const STATE_REFRESH_INTERVAL_MS = parseInt(
+  process.env.MISSION_CONTROL_STATE_REFRESH_INTERVAL_MS || "60000",
+  10,
+);
+const SSE_BROADCAST_INTERVAL_MS = parseInt(
+  process.env.MISSION_CONTROL_SSE_BROADCAST_INTERVAL_MS || "30000",
+  10,
+);
 
 function getFullState() {
   const now = Date.now();
@@ -2342,7 +2359,7 @@ function refreshState() {
 // Background state refresh and SSE broadcast
 let stateRefreshInterval = null;
 
-function startStateRefresh(intervalMs = 30000) {
+function startStateRefresh(intervalMs = STATE_REFRESH_INTERVAL_MS) {
   if (stateRefreshInterval) return;
 
   stateRefreshInterval = setInterval(() => {
@@ -2885,7 +2902,7 @@ function readTranscript(sessionId) {
 function getSessionDetail(sessionKey) {
   try {
     // Get basic session info
-    const listOutput = runOpenClaw("sessions list --json 2>/dev/null");
+    const listOutput = runOpenClaw("sessions --all-agents --json 2>/dev/null");
     let sessionInfo = null;
     const jsonStr = extractJSON(listOutput);
     if (jsonStr) {
@@ -3609,7 +3626,7 @@ function getRoutingStats(hours = 24) {
 function getSubagentStatus() {
   const subagents = [];
   try {
-    const output = runOpenClaw("sessions list --json 2>/dev/null");
+    const output = runOpenClaw("sessions --all-agents --json 2>/dev/null");
     const jsonStr = extractJSON(output);
     if (jsonStr) {
       const data = JSON.parse(jsonStr);
@@ -3731,7 +3748,7 @@ function executeAction(action) {
         break;
 
       case "sessions-list":
-        results.output = runOpenClaw("sessions list 2>&1") || "No sessions";
+        results.output = runOpenClaw("sessions --all-agents 2>&1") || "No sessions";
         results.success = true;
         break;
 
@@ -3742,7 +3759,7 @@ function executeAction(action) {
 
       case "health-check":
         const gateway = runOpenClaw("gateway status 2>&1");
-        const sessions = runOpenClaw("sessions list --json 2>&1");
+        const sessions = runOpenClaw("sessions --all-agents --json 2>&1");
         let sessionCount = 0;
         try {
           const data = JSON.parse(sessions);
@@ -3759,7 +3776,7 @@ function executeAction(action) {
 
       case "clear-stale-sessions":
         // List stale sessions (> 24h old)
-        const staleOutput = runOpenClaw("sessions list --json 2>&1");
+        const staleOutput = runOpenClaw("sessions --all-agents --json 2>&1");
         let staleCount = 0;
         try {
           const staleJson = extractJSON(staleOutput);
@@ -3768,7 +3785,7 @@ function executeAction(action) {
             staleCount = (data.sessions || []).filter((s) => s.ageMs > 24 * 60 * 60 * 1000).length;
           }
         } catch (e) { }
-        results.output = `Found ${staleCount} stale sessions (>24h old).\nTo clean: openclaw sessions prune`;
+        results.output = `Found ${staleCount} stale sessions (>24h old).\nTo clean: openclaw sessions cleanup`;
         results.success = true;
         break;
 
@@ -3780,6 +3797,165 @@ function executeAction(action) {
   }
 
   return results;
+}
+
+function normalizeInstructionPayload(payload = {}) {
+  const message = String(payload.message || payload.instruction || "").trim();
+  if (!message) {
+    return { error: "Instruction message is required" };
+  }
+  if (message.length > 6000) {
+    return { error: "Instruction is too long (max 6000 characters)" };
+  }
+
+  const agent = String(payload.agent || "main").trim();
+  if (!/^[a-zA-Z0-9_-]{1,64}$/.test(agent)) {
+    return { error: "Invalid agent id" };
+  }
+
+  const thinkingRaw = String(payload.thinking || "").trim().toLowerCase();
+  const validThinking = ["off", "minimal", "low", "medium", "high"];
+  const thinking = validThinking.includes(thinkingRaw) ? thinkingRaw : null;
+
+  const deliver = !!payload.deliver;
+
+  let timeoutSeconds = 90;
+  if (payload.timeout !== undefined && payload.timeout !== null && String(payload.timeout).trim()) {
+    const parsed = parseInt(String(payload.timeout), 10);
+    if (!Number.isFinite(parsed) || parsed < 10 || parsed > 600) {
+      return { error: "Timeout must be between 10 and 600 seconds" };
+    }
+    timeoutSeconds = parsed;
+  }
+
+  return { message, agent, thinking, deliver, timeoutSeconds };
+}
+
+function compactOutput(text, maxLen = 6000) {
+  const value = String(text || "").trim();
+  if (value.length <= maxLen) return value;
+  return `${value.slice(0, maxLen)}\n\n...[truncated]`;
+}
+
+function extractReplyPreview(parsed) {
+  if (!parsed || typeof parsed !== "object") return null;
+  const candidates = [parsed.reply, parsed.response, parsed.output, parsed.message];
+  for (const c of candidates) {
+    if (typeof c === "string" && c.trim()) return c.trim();
+  }
+  if (parsed.result && typeof parsed.result === "string" && parsed.result.trim()) {
+    return parsed.result.trim();
+  }
+  return null;
+}
+
+async function runOpenClawDetailedAsync(args, timeoutMs = 120000) {
+  const profile = process.env.OPENCLAW_PROFILE || "";
+  const profileFlag = profile ? ` --profile ${escapeShellArg(profile)}` : "";
+  const command = `${escapeShellArg(OPENCLAW_BIN)}${profileFlag} ${args}`;
+  try {
+    const { stdout, stderr } = await execAsync(command, {
+      encoding: "utf8",
+      timeout: timeoutMs,
+      env: { ...process.env, NO_COLOR: "1", TERM: "dumb" },
+      maxBuffer: 1024 * 1024 * 4,
+    });
+    return { ok: true, stdout: stdout || "", stderr: stderr || "", error: null };
+  } catch (e) {
+    return {
+      ok: false,
+      stdout: e.stdout || "",
+      stderr: e.stderr || "",
+      error: e.message || "OpenClaw command failed",
+    };
+  }
+}
+
+async function executeInstruction(payload) {
+  const normalized = normalizeInstructionPayload(payload);
+  if (normalized.error) {
+    return { success: false, error: normalized.error };
+  }
+
+  const args = [
+    "agent",
+    "--agent",
+    escapeShellArg(normalized.agent),
+    "--message",
+    escapeShellArg(normalized.message),
+    "--timeout",
+    String(normalized.timeoutSeconds),
+    "--json",
+  ];
+  if (normalized.thinking) {
+    args.push("--thinking", normalized.thinking);
+  }
+  if (normalized.deliver) {
+    args.push("--deliver");
+  }
+
+  const result = await runOpenClawDetailedAsync(
+    args.join(" "),
+    normalized.timeoutSeconds * 1000 + 15000,
+  );
+  const rawOutput = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+
+  const response = {
+    success: result.ok,
+    agent: normalized.agent,
+    deliver: normalized.deliver,
+    thinking: normalized.thinking || "default",
+    timeout: normalized.timeoutSeconds,
+    messagePreview:
+      normalized.message.length > 180
+        ? `${normalized.message.slice(0, 180)}...`
+        : normalized.message,
+    output: compactOutput(rawOutput, 2000),
+  };
+
+  let payloadText = "";
+  const jsonStr = extractJSON(rawOutput);
+  if (jsonStr) {
+    try {
+      const parsed = JSON.parse(jsonStr);
+      payloadText = Array.isArray(parsed.result?.payloads)
+        ? parsed.result.payloads.map((p) => String(p?.text || "")).filter(Boolean).join("\n\n").trim()
+        : "";
+      if (payloadText) {
+        response.output = compactOutput(payloadText, 2000);
+      }
+      const preview = extractReplyPreview(parsed);
+      if (preview) response.replyPreview = compactOutput(preview, 1200);
+      response.result = {
+        runId: parsed.runId || null,
+        status: parsed.status || null,
+        summary: parsed.summary || null,
+        durationMs: parsed.result?.meta?.durationMs ?? null,
+        provider: parsed.result?.meta?.agentMeta?.provider || null,
+        model: parsed.result?.meta?.agentMeta?.model || null,
+      };
+      if (parsed.status && parsed.status !== "ok") {
+        response.success = false;
+      }
+    } catch (_e) {
+      // Keep raw output only when JSON parsing fails
+    }
+  }
+
+  if (payloadText) {
+    const knownError = /validation error|all models failed|failovererror|request was aborted|timed out|unauthorized|connection failure/i;
+    if (knownError.test(payloadText)) {
+      response.success = false;
+      response.error = compactOutput(payloadText, 600);
+    }
+  }
+
+  if (!result.ok) {
+    response.success = false;
+    response.error = response.error || result.error || "Instruction execution failed";
+  }
+
+  return response;
 }
 
 // Create server
@@ -3921,6 +4097,41 @@ const server = http.createServer((req, res) => {
     const result = executeAction(action);
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(result, null, 2));
+  } else if (pathname === "/api/instruction") {
+    if (req.method !== "POST") {
+      res.writeHead(405, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Method not allowed" }));
+      return;
+    }
+
+    let body = "";
+    let payloadTooLarge = false;
+    req.on("data", (chunk) => {
+      if (payloadTooLarge) return;
+      body += chunk;
+      if (body.length > 1024 * 1024) {
+        payloadTooLarge = true;
+        body = "";
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Payload too large" }));
+        req.destroy();
+      }
+    });
+
+    req.on("end", async () => {
+      if (payloadTooLarge) return;
+      try {
+        const payload = JSON.parse(body || "{}");
+        const result = await executeInstruction(payload);
+        const statusCode = result.success ? 200 : 400;
+        res.writeHead(statusCode, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(result, null, 2));
+      } catch (e) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: false, error: `Invalid JSON: ${e.message}` }));
+      }
+    });
+    return;
   } else if (pathname === "/api/events") {
     // SSE endpoint for real-time updates
     res.writeHead(200, {
@@ -4232,4 +4443,4 @@ setInterval(() => {
     }
     sseRefreshing = false;
   }
-}, 15000); // 15-second updates (reduced from 5s to avoid blocking)
+}, SSE_BROADCAST_INTERVAL_MS); // Default 30 seconds; configurable via env

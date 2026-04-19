@@ -1977,6 +1977,81 @@ main {
   border-color: var(--accent);
 }
 
+.instruction-box {
+  margin: 0 0 24px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+}
+.instruction-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.instruction-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  flex: 1;
+}
+.instruction-field span {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.instruction-field input,
+.instruction-field select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+.instruction-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+.instruction-textarea {
+  width: 100%;
+  min-height: 110px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+  padding: 10px;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+.instruction-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+}
+.instruction-output {
+  margin: 10px 0 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  white-space: pre-wrap;
+  max-height: 220px;
+  overflow: auto;
+  font-size: 0.8rem;
+}
+.instruction-output.hidden {
+  display: none;
+}
+
 /* Virtual Office */
 .virtual-office-wrap {
   display: grid;
